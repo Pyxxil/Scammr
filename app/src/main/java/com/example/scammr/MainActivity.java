@@ -3,30 +3,30 @@ package com.example.scammr;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
-import android.text.TextUtils;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
+import android.widget.ProgressBar;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
-import com.microsoft.cognitiveservices.speech.CancellationDetails;
-import com.microsoft.cognitiveservices.speech.ResultReason;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.microsoft.cognitiveservices.speech.SpeechConfig;
-import com.microsoft.cognitiveservices.speech.SpeechRecognitionResult;
 import com.microsoft.cognitiveservices.speech.SpeechRecognizer;
 import com.microsoft.cognitiveservices.speech.audio.AudioConfig;
 
-import java.util.ArrayList;
 import java.util.Objects;
-import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -39,27 +39,14 @@ public class MainActivity extends AppCompatActivity {
         s_executorService = Executors.newCachedThreadPool();
     }
 
-    private TextView recognizedTextView;
-    private Button recognizeButton;
-    private Button recognizeIntermediateButton;
-    private Button recognizeContinuousButton;
+//    private TextView recognizedTextView;
+    private Button callButton;
+    private ProgressBar progressBar;
 
-    @SuppressWarnings("FieldCanBeLocal")
-    private final int RISK_THRESHOLD = 72;
-
-    private void setRiskLevel(int level) {
-        if (level > RISK_THRESHOLD) {
-            Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-            // Vibrate for 500 milliseconds
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                Objects.requireNonNull(v).vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE));
-                v.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE));
-            } else {
-                //deprecated in API 26
-                Objects.requireNonNull(v).vibrate(500);
-                v.vibrate(500);
-            }
-        }
+    public enum THRESHOLD {
+        LOW,
+        MEDIUM,
+        HIGH
     }
 
     @SuppressLint("SetTextI18n")
@@ -69,11 +56,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        recognizedTextView = findViewById(R.id.recognizedText);
+//        recognizedTextView = findViewById(R.id.recognisedText);
+        progressBar = findViewById(R.id.progressBar);
+        Drawable progressDrawable = progressBar.getProgressDrawable().mutate();
+        progressDrawable.setColorFilter(Color.GREEN, android.graphics.PorterDuff.Mode.SRC_IN);
+        progressBar.setProgressDrawable(progressDrawable);
 
-        recognizeButton = findViewById(R.id.buttonRecognize);
-        recognizeIntermediateButton = findViewById(R.id.buttonRecognizeIntermediate);
-        recognizeContinuousButton = findViewById(R.id.buttonRecognizeContinuous);
+        callButton = findViewById(R.id.callButton);
 
         try {
             // a unique number within the application to allow
@@ -85,13 +74,12 @@ public class MainActivity extends AppCompatActivity {
                     new String[]{
                             Manifest.permission.RECORD_AUDIO,
                             Manifest.permission.INTERNET,
-                            Manifest.permission.MANAGE_OWN_CALLS,
                             Manifest.permission.READ_CALL_LOG,
-                            Manifest.permission.ANSWER_PHONE_CALLS,
+                            Manifest.permission.READ_PHONE_STATE,
                     }, permissionRequestId);
         } catch (Exception ex) {
             Log.e("SpeechSDK", "could not init sdk, " + ex.toString());
-            recognizedTextView.setText("Could not initialize: " + ex.toString());
+//            recognizedTextView.setText("Could not initialize: " + ex.toString());
         }
 
         // create config
@@ -108,84 +96,13 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        ///////////////////////////////////////////////////
-        // recognize
-        ///////////////////////////////////////////////////
-        recognizeButton.setOnClickListener(view -> {
-            final String logTag = "reco 1";
-
-            disableButtons();
-            clearTextBox();
-
-            try {
-                final AudioConfig audioInput = AudioConfig.fromDefaultMicrophoneInput();
-//                final AudioConfig audioInput = AudioConfig.fromStreamInput(createMicrophoneStream());
-                final SpeechRecognizer recogniser = new SpeechRecognizer(speechConfig, audioInput);
-
-                final Future<SpeechRecognitionResult> task = recogniser.recognizeOnceAsync();
-                Log.i(logTag, "Starting recognition");
-                setOnTaskCompletedListener(task, result -> {
-                    String s = result.getText();
-                    if (result.getReason() != ResultReason.RecognizedSpeech) {
-                        String errorDetails = (result.getReason() == ResultReason.Canceled) ? CancellationDetails.fromResult(result).getErrorDetails() : "";
-                        s = "Recognition failed with " + result.getReason() + ". Did you enter your subscription?" + System.lineSeparator() + errorDetails;
-                    }
-
-                    recogniser.close();
-                    Log.i(logTag, "Recognizer returned: " + s);
-                    setRecognizedText(s);
-                    enableButtons();
-                });
-            } catch (Exception ex) {
-                System.out.println(ex.getMessage());
-                displayException(ex);
-            }
-        });
-
-        ///////////////////////////////////////////////////
-        // recognize with intermediate results
-        ///////////////////////////////////////////////////
-        recognizeIntermediateButton.setOnClickListener(view -> {
-            final String logTag = "reco 2";
-
-            disableButtons();
-            clearTextBox();
-
-            try {
-                final AudioConfig audioInput = AudioConfig.fromDefaultMicrophoneInput();
-//                final AudioConfig audioInput = AudioConfig.fromStreamInput(createMicrophoneStream());
-                final SpeechRecognizer recogniser = new SpeechRecognizer(speechConfig, audioInput);
-
-                recogniser.recognizing.addEventListener((o, speechRecognitionResultEventArgs) -> {
-                    final String s = speechRecognitionResultEventArgs.getResult().getText();
-                    Log.i(logTag, "Intermediate result received: " + s);
-                    setRecognizedText(s);
-                });
-
-                final Future<SpeechRecognitionResult> task = recogniser.recognizeOnceAsync();
-                setOnTaskCompletedListener(task, result -> {
-                    final String s = result.getText();
-                    recogniser.close();
-                    Log.i(logTag, "Recognizer returned: " + s);
-                    setRecognizedText(s);
-                    enableButtons();
-                });
-            } catch (Exception ex) {
-                System.out.println(ex.getMessage());
-                displayException(ex);
-            }
-        });
-
-        ///////////////////////////////////////////////////
-        // recognize continuously
-        ///////////////////////////////////////////////////
-        recognizeContinuousButton.setOnClickListener(new View.OnClickListener() {
+        callButton.setOnClickListener(new View.OnClickListener() {
             private static final String logTag = "reco 3";
             private boolean continuousListeningStarted = false;
-            private SpeechRecognizer recogniser = null;
             private AudioConfig audioInput = null;
-            private String buttonText = "";
-            private final ArrayList<String> content = new ArrayList<>();
+            private SpeechRecognizer recogniser = null;
+            private RiskDetector riskDetector = null;
+            private THRESHOLD current_threshold = null;
 
             @SuppressLint("SetTextI18n")
             @Override
@@ -196,8 +113,16 @@ public class MainActivity extends AppCompatActivity {
                     if (recogniser != null) {
                         final Future<Void> task = recogniser.stopContinuousRecognitionAsync();
                         setOnTaskCompletedListener(task, result -> {
-                            Log.i(logTag, "Continuous recognition stopped.");
-                            MainActivity.this.runOnUiThread(() -> clickedButton.setText(buttonText));
+                            Log.i(logTag, "Recognition stopped.");
+                            MainActivity.this.runOnUiThread(() -> {
+                                clickedButton.setText(getResources().getString(R.string.begin_call));
+                                setRecognizedText(getResources().getString(
+                                        R.string.not_currently_in_call));
+                                progressBar.setProgress(0);
+                                Drawable progressDrawable = progressBar.getProgressDrawable().mutate();
+                                progressDrawable.setColorFilter(Color.GREEN, android.graphics.PorterDuff.Mode.SRC_IN);
+                                progressBar.setProgressDrawable(progressDrawable);
+                            });
                             enableButtons();
                             continuousListeningStarted = false;
                         });
@@ -211,53 +136,105 @@ public class MainActivity extends AppCompatActivity {
                 clearTextBox();
 
                 try {
-                    content.clear();
-
                     audioInput = AudioConfig.fromDefaultMicrophoneInput();
 //                    audioInput = AudioConfig.fromStreamInput(createMicrophoneStream());
                     recogniser = new SpeechRecognizer(speechConfig, audioInput);
 
-                    recogniser.recognizing.addEventListener((o, speechRecognitionResultEventArgs) -> {
-                        final String s = speechRecognitionResultEventArgs.getResult().getText();
-                        Log.i(logTag, "Intermediate result received: " + s);
-                        content.add(s);
-                        setRecognizedText(TextUtils.join(" ", content));
-                        content.remove(content.size() - 1);
-                    });
+                    riskDetector = new RiskDetector();
+                    progressBar.setProgress(0);
+                    current_threshold = THRESHOLD.LOW;
 
                     recogniser.recognized.addEventListener((o, speechRecognitionResultEventArgs) -> {
                         final String s = speechRecognitionResultEventArgs.getResult().getText();
+
                         Log.i(logTag, "Final result received: " + s);
-                        final int random = new Random().nextInt(31) + 70;
-                        Log.i("Randomness", String.format("%d", random));
-                        setRiskLevel(s.isEmpty() ? 0 : random);
-                        content.add(s);
-                        setRecognizedText(TextUtils.join(" ", content));
+
+                        if (continuousListeningStarted) {
+                            riskDetector.parseText(s);
+                            Log.i("Risk Value", String.format("%d", riskDetector.getRiskValue()));
+                            setRecognizedText(riskDetector.getRisk());
+                            progressBar.setProgress(riskDetector.getRiskValue());
+
+                            // DONT SHAKE WHEN:
+                            // risk == low
+                            // curr == medium && risk == medium
+                            // curr == high && risk == high
+                            if (riskDetector.getRiskValue() < riskDetector.getMediumThreshold() ||
+                                    (current_threshold == THRESHOLD.HIGH && riskDetector.getRiskValue() >= riskDetector.getHighThreshold()) ||
+                                    (current_threshold == THRESHOLD.MEDIUM && riskDetector.getRiskValue() < riskDetector.getHighThreshold())
+                            ) {
+                                Log.i("THRESHOLD", "riskDetector value < medium == " + (riskDetector.getRiskValue() < riskDetector.getMediumThreshold())
+                                    + ", Current threshold == " + current_threshold);
+                                return;
+                            }
+
+                            current_threshold = riskDetector.getRiskValue() >= riskDetector.getHighThreshold() ? THRESHOLD.HIGH : THRESHOLD.MEDIUM;
+
+                            Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                Objects.requireNonNull(vibrator).vibrate(VibrationEffect.createOneShot(current_threshold == THRESHOLD.HIGH ? 2000 : 1000, VibrationEffect.DEFAULT_AMPLITUDE));
+                            } else {
+                                //deprecated in API 26
+                                Objects.requireNonNull(vibrator).vibrate(current_threshold == THRESHOLD.HIGH ? 2000 : 1000);
+                            }
+
+                            Drawable progressDrawable = progressBar.getProgressDrawable().mutate();
+                            progressDrawable.setColorFilter(current_threshold == THRESHOLD.HIGH ? Color.RED : Color.YELLOW, android.graphics.PorterDuff.Mode.SRC_IN);
+                            progressBar.setProgressDrawable(progressDrawable);
+                        }
                     });
 
                     final Future<Void> task = recogniser.startContinuousRecognitionAsync();
                     setOnTaskCompletedListener(task, result -> {
                         continuousListeningStarted = true;
                         MainActivity.this.runOnUiThread(() -> {
-                            buttonText = clickedButton.getText().toString();
-                            clickedButton.setText("Stop");
+                            clickedButton.setText(getResources().getString(R.string.end_call));
                             clickedButton.setEnabled(true);
                         });
                     });
+
                 } catch (Exception ex) {
                     System.out.println(ex.getMessage());
                     displayException(ex);
                 }
             }
         });
+
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNav);
+        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.action_home:
+                        break;
+                    case R.id.action_report:
+                        reportPage();
+                        break;
+                    case R.id.action_settings:
+                        settingsPage();
+                        break;
+                }
+                return true;
+            }
+        });
+    }
+
+    void settingsPage() {
+        Intent settings = new Intent(this, Settings.class);
+        startActivity(settings);
+    }
+
+    void reportPage() {
+        Intent report = new Intent(this, Report.class);
+        startActivity(report);
     }
 
     private void displayException(Exception ex) {
-        recognizedTextView.setText(String.format("%s%s%s", ex.getMessage(), System.lineSeparator(), TextUtils.join(System.lineSeparator(), ex.getStackTrace())));
+//        recognizedTextView.setText(String.format("%s%s%s", ex.getMessage(), System.lineSeparator(), TextUtils.join(System.lineSeparator(), ex.getStackTrace())));
     }
 
     private void clearTextBox() {
-        AppendTextLine("");
+        AppendTextLine(getResources().getString(R.string.not_currently_in_call));
     }
 
     private void setRecognizedText(final String s) {
@@ -265,25 +242,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void AppendTextLine(final String s) {
-        MainActivity.this.runOnUiThread(() -> recognizedTextView.setText(s));
+//        MainActivity.this.runOnUiThread(() -> recognizedTextView.setText(s));
     }
 
     private void disableButtons() {
-        MainActivity.this.runOnUiThread(() -> {
-            recognizeButton.setEnabled(false);
-            recognizeIntermediateButton.setEnabled(false);
-            recognizeContinuousButton.setEnabled(false);
-//            recognizeIntentButton.setEnabled(false);
-        });
+        MainActivity.this.runOnUiThread(() -> callButton.setEnabled(false));
     }
 
     private void enableButtons() {
-        MainActivity.this.runOnUiThread(() -> {
-            recognizeButton.setEnabled(true);
-            recognizeIntermediateButton.setEnabled(true);
-            recognizeContinuousButton.setEnabled(true);
-//            recognizeIntentButton.setEnabled(true);
-        });
+        MainActivity.this.runOnUiThread(() -> callButton.setEnabled(true));
     }
 
     private <T> void setOnTaskCompletedListener(Future<T> task, OnTaskCompletedListener<T> listener) {
