@@ -12,8 +12,7 @@
         android:id="@+id/action_report"
         android:enabled="true"
         android:title="Report"
-        app:showAsAction="ifRoom"
-        />
+        app:showAsAction="ifRoom" />
     <item
         android:id="@+id/action_settings"
         android:enabled="true"

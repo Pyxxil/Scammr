@@ -1,4 +1,4 @@
-package com.example.scammr;
+package com.example.scamcam;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -10,13 +10,12 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
-import android.util.Log;
-import android.view.MenuItem;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -31,6 +30,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+//import android.util.Log;
+
 public class MainActivity extends AppCompatActivity {
 
     private static final ExecutorService s_executorService;
@@ -39,15 +40,10 @@ public class MainActivity extends AppCompatActivity {
         s_executorService = Executors.newCachedThreadPool();
     }
 
-//    private TextView recognizedTextView;
+    private TextView riskLevelText;
+    private TextView transcribedText;
     private Button callButton;
     private ProgressBar progressBar;
-
-    public enum THRESHOLD {
-        LOW,
-        MEDIUM,
-        HIGH
-    }
 
     @SuppressLint("SetTextI18n")
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -56,8 +52,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-//        recognizedTextView = findViewById(R.id.recognisedText);
+        riskLevelText = findViewById(R.id.riskLevelText);
+        transcribedText = findViewById(R.id.transcribedText);
         progressBar = findViewById(R.id.progressBar);
+
         Drawable progressDrawable = progressBar.getProgressDrawable().mutate();
         progressDrawable.setColorFilter(Color.GREEN, android.graphics.PorterDuff.Mode.SRC_IN);
         progressBar.setProgressDrawable(progressDrawable);
@@ -78,8 +76,8 @@ public class MainActivity extends AppCompatActivity {
                             Manifest.permission.READ_PHONE_STATE,
                     }, permissionRequestId);
         } catch (Exception ex) {
-            Log.e("SpeechSDK", "could not init sdk, " + ex.toString());
-//            recognizedTextView.setText("Could not initialize: " + ex.toString());
+//            Log.e("SpeechSDK", "could not init sdk, " + ex.toString());
+            transcribedText.setText("Could not initialize: " + ex.toString());
         }
 
         // create config
@@ -97,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         callButton.setOnClickListener(new View.OnClickListener() {
-            private static final String logTag = "reco 3";
+            //            private static final String logTag = "reco 3";
             private boolean continuousListeningStarted = false;
             private AudioConfig audioInput = null;
             private SpeechRecognizer recogniser = null;
@@ -113,22 +111,21 @@ public class MainActivity extends AppCompatActivity {
                     if (recogniser != null) {
                         final Future<Void> task = recogniser.stopContinuousRecognitionAsync();
                         setOnTaskCompletedListener(task, result -> {
-                            Log.i(logTag, "Recognition stopped.");
+//                            Log.i(logTag, "Recognition stopped.");
                             MainActivity.this.runOnUiThread(() -> {
                                 clickedButton.setText(getResources().getString(R.string.begin_call));
-                                setRecognizedText(getResources().getString(
-                                        R.string.not_currently_in_call));
+                                riskLevelText.setText(getResources().getString(R.string.not_currently_in_call));
+                                clearTextBox();
                                 progressBar.setProgress(0);
                                 Drawable progressDrawable = progressBar.getProgressDrawable().mutate();
                                 progressDrawable.setColorFilter(Color.GREEN, android.graphics.PorterDuff.Mode.SRC_IN);
                                 progressBar.setProgressDrawable(progressDrawable);
                             });
                             enableButtons();
-                            continuousListeningStarted = false;
                         });
-                    } else {
-                        continuousListeningStarted = false;
                     }
+
+                    continuousListeningStarted = false;
 
                     return;
                 }
@@ -142,17 +139,23 @@ public class MainActivity extends AppCompatActivity {
 
                     riskDetector = new RiskDetector();
                     progressBar.setProgress(0);
+                    riskLevelText.setText("Waiting for person to speak...");
                     current_threshold = THRESHOLD.LOW;
 
                     recogniser.recognized.addEventListener((o, speechRecognitionResultEventArgs) -> {
                         final String s = speechRecognitionResultEventArgs.getResult().getText();
 
-                        Log.i(logTag, "Final result received: " + s);
+                        if (s.isEmpty()) {
+                            return;
+                        }
+
+//                        Log.i(logTag, "Final result received: " + s);
 
                         if (continuousListeningStarted) {
                             riskDetector.parseText(s);
-                            Log.i("Risk Value", String.format("%d", riskDetector.getRiskValue()));
-                            setRecognizedText(riskDetector.getRisk());
+//                            Log.i("Risk Value", String.format("%d", riskDetector.getRiskValue()));
+                            riskLevelText.setText(riskDetector.getRisk() + " (" + riskDetector.getRiskValue() + ")");
+                            setTranscribedText(s);
                             progressBar.setProgress(riskDetector.getRiskValue());
 
                             // DONT SHAKE WHEN:
@@ -163,8 +166,8 @@ public class MainActivity extends AppCompatActivity {
                                     (current_threshold == THRESHOLD.HIGH && riskDetector.getRiskValue() >= riskDetector.getHighThreshold()) ||
                                     (current_threshold == THRESHOLD.MEDIUM && riskDetector.getRiskValue() < riskDetector.getHighThreshold())
                             ) {
-                                Log.i("THRESHOLD", "riskDetector value < medium == " + (riskDetector.getRiskValue() < riskDetector.getMediumThreshold())
-                                    + ", Current threshold == " + current_threshold);
+//                                Log.i("THRESHOLD", "riskDetector value < medium == " + (riskDetector.getRiskValue() < riskDetector.getMediumThreshold())
+//                                        + ", Current threshold == " + current_threshold);
                                 return;
                             }
 
@@ -201,21 +204,18 @@ public class MainActivity extends AppCompatActivity {
         });
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNav);
-        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.action_home:
-                        break;
-                    case R.id.action_report:
-                        reportPage();
-                        break;
-                    case R.id.action_settings:
-                        settingsPage();
-                        break;
-                }
-                return true;
+        bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.action_home:
+                    break;
+                case R.id.action_report:
+                    reportPage();
+                    break;
+                case R.id.action_settings:
+                    settingsPage();
+                    break;
             }
+            return true;
         });
     }
 
@@ -230,19 +230,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void displayException(Exception ex) {
-//        recognizedTextView.setText(String.format("%s%s%s", ex.getMessage(), System.lineSeparator(), TextUtils.join(System.lineSeparator(), ex.getStackTrace())));
+        transcribedText.setText(String.format("%s%s%s", ex.getMessage(), System.lineSeparator(), TextUtils.join(System.lineSeparator(), ex.getStackTrace())));
     }
 
     private void clearTextBox() {
-        AppendTextLine(getResources().getString(R.string.not_currently_in_call));
+        AppendTextLine("");
     }
 
-    private void setRecognizedText(final String s) {
+    private void setTranscribedText(final String s) {
         AppendTextLine(s);
     }
 
     private void AppendTextLine(final String s) {
-//        MainActivity.this.runOnUiThread(() -> recognizedTextView.setText(s));
+        MainActivity.this.runOnUiThread(() -> transcribedText.setText(s));
     }
 
     private void disableButtons() {
@@ -259,6 +259,12 @@ public class MainActivity extends AppCompatActivity {
             listener.onCompleted(result);
             return null;
         });
+    }
+
+    public enum THRESHOLD {
+        LOW,
+        MEDIUM,
+        HIGH
     }
 
     private interface OnTaskCompletedListener<T> {

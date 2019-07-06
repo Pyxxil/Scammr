@@ -1,4 +1,4 @@
-package com.example.scammr;
+package com.example.scamcam;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -7,23 +7,23 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-public class Settings extends AppCompatActivity {
+public class Report extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_settings);
+        setContentView(R.layout.activity_report);
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNav);
-        bottomNavigationView.setOnNavigationItemSelectedListener(item1 -> {
-            switch (item1.getItemId()) {
+        bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
+            switch (item.getItemId()) {
                 case R.id.action_home:
                     homePage();
                     break;
                 case R.id.action_report:
-                    reportPage();
                     break;
                 case R.id.action_settings:
+                    settingsPage();
                     break;
             }
             return true;
@@ -35,8 +35,8 @@ public class Settings extends AppCompatActivity {
         startActivity(home);
     }
 
-    void reportPage() {
-        Intent report = new Intent(this, Report.class);
-        startActivity(report);
+    void settingsPage() {
+        Intent setting = new Intent(this, Settings.class);
+        startActivity(setting);
     }
 }

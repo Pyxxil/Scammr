@@ -4,66 +4,66 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Settings" >
+    tools:context=".Settings">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
-        android:orientation="vertical" >
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/textView3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="14pt"
             android:layout_marginTop="20dp"
-            android:text="Settings" />
+            android:text="Settings"
+            android:textSize="14pt" />
 
         <TextView
             android:id="@+id/textView1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:textSize="12pt"
-            android:text="Select the ways like to be notified of the risk level during call" />
+            android:text="Select the ways like to be notified of the risk level during call"
+            android:textSize="12pt" />
 
         <RadioButton
             android:id="@+id/radioButton4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="12pt"
-            android:text="Vibrations" />
+            android:text="Vibrations"
+            android:textSize="12pt" />
 
         <RadioButton
             android:id="@+id/radioButton1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="12pt"
-            android:text="Sound" />
+            android:text="Sound"
+            android:textSize="12pt" />
 
         <TextView
             android:id="@+id/textView2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:textSize="12pt"
-            android:text="To help us improve your experience allows us to record the text from your calls." />
+            android:text="To help us improve your experience allows us to record the text from your calls."
+            android:textSize="12pt" />
 
         <RadioButton
             android:id="@+id/radioButton5"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="12pt"
-            android:text="Record" />
+            android:text="Record"
+            android:textSize="12pt" />
 
         <RadioButton
             android:id="@+id/radioButton6"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="12pt"
-            android:text="Don't Record" />
+            android:text="Don't Record"
+            android:textSize="12pt" />
     </LinearLayout>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView

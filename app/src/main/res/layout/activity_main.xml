@@ -47,6 +47,18 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="348dp"
+        android:layout_height="186dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="34dp"
+        android:layout_marginTop="270dp"
+        android:scaleY="12"
+        android:startColor="#ff9d9e9d" />
+
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNav"
         android:layout_width="match_parent"
@@ -54,16 +66,40 @@
         android:layout_alignParentBottom="true"
         app:menu="@menu/bottom_nav_menu" />
 
-    <ProgressBar
-        android:id="@+id/progressBar"
-        android:startColor="#ff9d9e9d"
-        style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="344dp"
-        android:layout_height="200dp"
-        android:layout_alignParentStart="true"
+    <LinearLayout
+        android:layout_width="345dp"
+        android:layout_height="60dp"
+        android:layout_alignStart="@+id/progressBar"
         android:layout_alignParentTop="true"
-        android:layout_marginStart="37dp"
-        android:layout_marginTop="190dp"
-        android:scaleY="4"/>
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="130dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/riskText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:text="Risk Level: "
+            android:textSize="8pt" />
+
+        <TextView
+            android:id="@+id/riskLevelText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="5"
+            android:text="@string/not_currently_in_call"
+            android:textSize="9pt" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/transcribedText"
+        android:layout_width="349dp"
+        android:layout_height="174dp"
+        android:layout_alignStart="@+id/progressBar"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="161dp"
+        android:textSize="8pt" />
+
 
 </RelativeLayout>

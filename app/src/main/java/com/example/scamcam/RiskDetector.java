@@ -1,4 +1,4 @@
-package com.example.scammr;
+package com.example.scamcam;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -9,14 +9,9 @@ import java.util.Map;
 
 public class RiskDetector {
 
-    private static int threshold = 72;
-
-    private int risk = 0;
-    private int money_mentioned = 0;
-    private List<Integer> numbers_recorded = new ArrayList<Integer>();
-    private static List<String> currencies = Arrays.asList("$", "dollar", "euro", "pound", "dong", "rupee", "yen", "shilling", "coin", "gold", "money", "bucks");
-
     public static final HashMap<String, Integer> RISK_NUMBER = new HashMap<>();
+    private static int threshold = 72;
+    private static List<String> currencies = Arrays.asList("$", "dollar", "euro", "pound", "dong", "rupee", "yen", "shilling", "coin", "gold", "money", "bucks");
 
     static {
         RISK_NUMBER.put("cryptocurrency", 5);
@@ -54,6 +49,28 @@ public class RiskDetector {
         RISK_NUMBER.put("rich", 10);
     }
 
+    private int risk = 0;
+    private int money_mentioned = 0;
+    private List<Integer> numbers_recorded = new ArrayList<Integer>();
+
+    RiskDetector() {
+
+    }
+
+    public static Integer sum(List<Integer> list) {
+        int sum = 0;
+        for (Integer num : list) {
+            sum += num;
+        }
+        return sum;
+    }
+
+    public static Integer max(List<Integer> list) {
+        if (list == null || list.size() == 0)
+            return Integer.MIN_VALUE;
+        return Collections.max(list);
+    }
+
     void setThreshold(int thresh) {
         threshold = thresh;
     }
@@ -66,13 +83,8 @@ public class RiskDetector {
         return threshold / 2;
     }
 
-    RiskDetector() {
-
-    }
-
     public void parseText(String text) {
         text = text.toLowerCase();
-        System.out.println("On entry: " + text);
 
         for (String currency : currencies) {
             if (text.contains(currency)) {
@@ -81,7 +93,6 @@ public class RiskDetector {
         }
 
         text = text.replaceAll(",", "");
-        System.out.println("After replacement: " + text);
         List<String> tmp = Arrays.asList(text.replaceAll("[^0-9]+", " ").trim().split(" "));
         if (tmp.size() != 0) {
             for (String s : tmp) {
@@ -104,7 +115,6 @@ public class RiskDetector {
         int r = money_mentioned;
         if (money_mentioned > 0) {
             r += sum(numbers_recorded) / 10;
-            // r += max(numbers_recorded) / 10;
         }
 
         return Math.min(risk + r, 100);
@@ -113,20 +123,5 @@ public class RiskDetector {
     public String getRisk() {
         int r = getRiskValue();
         return r >= getHighThreshold() ? "High Risk" : r >= getMediumThreshold() ? "Medium Risk" : "Low Risk";
-    }
-
-
-    public static Integer sum(List<Integer> list) {
-        int sum = 0;
-        for (Integer num : list) {
-            sum += num;
-        }
-        return sum;
-    }
-
-    public static Integer max(List<Integer> list) {
-        if (list == null || list.size() == 0)
-            return Integer.MIN_VALUE;
-        return Collections.max(list);
     }
 }

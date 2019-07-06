@@ -1,6 +1,6 @@
 <resources>
-    <string name="app_name">Scammr</string>
+    <string name="app_name">ScamCam</string>
     <string name="not_currently_in_call">Not currently in call</string>
-    <string name="begin_call">Begin Call</string>
-    <string name="end_call">End Call</string>
+    <string name="begin_call">Start</string>
+    <string name="end_call">Stop</string>
 </resources>
