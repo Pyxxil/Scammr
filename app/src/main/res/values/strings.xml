@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">Scammr</string>
+    <string name="recognize">Recognize</string>
+    <string name="recognize_with_intermediate_results">Recognize with intermediate results</string>
+    <string name="recognize_continuously">Recognize continuously</string>
+</resources>
