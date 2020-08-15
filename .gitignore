@@ -13,6 +13,4 @@
 .externalNativeBuild
 .idea
 gradle.properties
-gradle
-gradlew.bat
-gradlew
+gradle/
