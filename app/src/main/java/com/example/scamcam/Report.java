@@ -30,12 +30,12 @@ public class Report extends AppCompatActivity {
         });
     }
 
-    void homePage() {
+    private void homePage() {
         Intent home = new Intent(this, MainActivity.class);
         startActivity(home);
     }
 
-    void settingsPage() {
+    private void settingsPage() {
         Intent setting = new Intent(this, Settings.class);
         startActivity(setting);
     }

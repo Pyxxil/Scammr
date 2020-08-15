@@ -95,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         callButton.setOnClickListener(new View.OnClickListener() {
-            //            private static final String logTag = "reco 3";
+            //            private static final String logTag = "recogniser";
             private boolean continuousListeningStarted = false;
             private AudioConfig audioInput = null;
             private SpeechRecognizer recogniser = null;
@@ -158,7 +158,7 @@ public class MainActivity extends AppCompatActivity {
                             setTranscribedText(s);
                             progressBar.setProgress(riskDetector.getRiskValue());
 
-                            // DONT SHAKE WHEN:
+                            // DON'T SHAKE WHEN:
                             // risk == low
                             // curr == medium && risk == medium
                             // curr == high && risk == high
@@ -219,12 +219,12 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    void settingsPage() {
+    private void settingsPage() {
         Intent settings = new Intent(this, Settings.class);
         startActivity(settings);
     }
 
-    void reportPage() {
+    private void reportPage() {
         Intent report = new Intent(this, Report.class);
         startActivity(report);
     }

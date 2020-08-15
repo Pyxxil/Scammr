@@ -3,4 +3,19 @@
     <string name="not_currently_in_call">Not currently in call</string>
     <string name="begin_call">Start</string>
     <string name="end_call">Stop</string>
+    <string name="call_for_help">Call for Help</string>
+    <string name="caller_is_safe">Caller is Safe</string>
+    <string name="recent_calls">Recent Calls</string>
+    <string name="call_from_number">Call from number</string>
+    <string name="risk_level">Risk Level:</string>
+    <string name="report_number">Report Number</string>
+    <string name="settings">Settings</string>
+    <string name="select_the_ways_like_to_be_notified_of_the_risk_level_during_call">Select the ways like to be notified of the risk level during call</string>
+    <string name="vibrations">Vibrations</string>
+    <string name="sound">Sound</string>
+    <string name="to_help_us_improve_your_experience_allows_us_to_record_the_text_from_your_calls">To help us improve your experience allows us to record the text from your calls.</string>
+    <string name="record">Record</string>
+    <string name="don_t_record">Don\'t Record</string>
+    <string name="home">Home</string>
+    <string name="report">Report</string>
 </resources>

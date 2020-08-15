@@ -19,7 +19,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="13dp"
             android:layout_marginTop="13dp"
-            android:text="Recent Calls"
+            android:text="@string/recent_calls"
             android:textSize="14pt" />
 
         <TextView
@@ -28,7 +28,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_marginTop="13dp"
-            android:text="Call from number"
+            android:text="@string/call_from_number"
             android:textSize="12pt" />
 
         <TextView
@@ -37,7 +37,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_marginTop="5dp"
-            android:text="Risk Level: "
+            android:text="@string/risk_level"
             android:textSize="12pt" />
 
         <Button
@@ -47,7 +47,7 @@
             android:layout_marginStart="20dp"
             android:layout_marginTop="5dp"
             android:background="#F02416"
-            android:text="Report Number"
+            android:text="@string/report_number"
             android:textSize="10pt" />
 
         <TextView
@@ -56,7 +56,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_marginTop="13dp"
-            android:text="Call from number"
+            android:text="@string/call_from_number"
             android:textSize="12pt" />
 
         <TextView
@@ -65,7 +65,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_marginTop="5dp"
-            android:text="Risk Level: "
+            android:text="@string/risk_level"
             android:textSize="12pt" />
 
         <Button
@@ -75,7 +75,7 @@
             android:layout_marginStart="20dp"
             android:layout_marginTop="5dp"
             android:background="#F02416"
-            android:text="Report Number"
+            android:text="@string/report_number"
             android:textSize="10pt" />
     </LinearLayout>
 

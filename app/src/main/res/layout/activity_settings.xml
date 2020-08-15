@@ -18,7 +18,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:text="Settings"
+            android:text="@string/settings"
             android:textSize="14pt" />
 
         <TextView
@@ -26,21 +26,21 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:text="Select the ways like to be notified of the risk level during call"
+            android:text="@string/select_the_ways_like_to_be_notified_of_the_risk_level_during_call"
             android:textSize="12pt" />
 
         <RadioButton
             android:id="@+id/radioButton4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Vibrations"
+            android:text="@string/vibrations"
             android:textSize="12pt" />
 
         <RadioButton
             android:id="@+id/radioButton1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Sound"
+            android:text="@string/sound"
             android:textSize="12pt" />
 
         <TextView
@@ -48,21 +48,21 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:text="To help us improve your experience allows us to record the text from your calls."
+            android:text="@string/to_help_us_improve_your_experience_allows_us_to_record_the_text_from_your_calls"
             android:textSize="12pt" />
 
         <RadioButton
             android:id="@+id/radioButton5"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Record"
+            android:text="@string/record"
             android:textSize="12pt" />
 
         <RadioButton
             android:id="@+id/radioButton6"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Don't Record"
+            android:text="@string/don_t_record"
             android:textSize="12pt" />
     </LinearLayout>
 

@@ -7,11 +7,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class RiskDetector {
+class RiskDetector {
 
-    public static final HashMap<String, Integer> RISK_NUMBER = new HashMap<>();
+    private static final HashMap<String, Integer> RISK_NUMBER = new HashMap<>();
     private static int threshold = 72;
-    private static List<String> currencies = Arrays.asList("$", "dollar", "euro", "pound", "dong", "rupee", "yen", "shilling", "coin", "gold", "money", "bucks");
+    private static final List<String> currencies = Arrays.asList("$", "dollar", "euro", "pound", "dong", "rupee", "yen", "shilling", "coin", "gold", "money", "bucks");
 
     static {
         RISK_NUMBER.put("cryptocurrency", 5);
@@ -51,13 +51,13 @@ public class RiskDetector {
 
     private int risk = 0;
     private int money_mentioned = 0;
-    private List<Integer> numbers_recorded = new ArrayList<Integer>();
+    private final List<Integer> numbers_recorded = new ArrayList<>();
 
     RiskDetector() {
 
     }
 
-    public static Integer sum(List<Integer> list) {
+    private static Integer sum(List<Integer> list) {
         int sum = 0;
         for (Integer num : list) {
             sum += num;
@@ -65,11 +65,13 @@ public class RiskDetector {
         return sum;
     }
 
-    public static Integer max(List<Integer> list) {
-        if (list == null || list.size() == 0)
-            return Integer.MIN_VALUE;
-        return Collections.max(list);
-    }
+// --Commented out by Inspection START (2019-07-07 11:38):
+//    public static Integer max(List<Integer> list) {
+//        if (list == null || list.size() == 0)
+//            return Integer.MIN_VALUE;
+//        return Collections.max(list);
+//    }
+// --Commented out by Inspection STOP (2019-07-07 11:38)
 
     void setThreshold(int thresh) {
         threshold = thresh;

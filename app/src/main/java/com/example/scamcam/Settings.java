@@ -30,12 +30,12 @@ public class Settings extends AppCompatActivity {
         });
     }
 
-    void homePage() {
+    private void homePage() {
         Intent home = new Intent(this, MainActivity.class);
         startActivity(home);
     }
 
-    void reportPage() {
+    private void reportPage() {
         Intent report = new Intent(this, Report.class);
         startActivity(report);
     }

@@ -29,7 +29,7 @@
         android:layout_alignParentTop="true"
         android:layout_marginStart="240dp"
         android:layout_marginTop="34dp"
-        android:text="Call for Help"
+        android:text="@string/call_for_help"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -42,7 +42,7 @@
         android:layout_marginStart="237dp"
         android:layout_marginTop="-2dp"
         android:background="#48CE32"
-        android:text="Caller is Safe"
+        android:text="@string/caller_is_safe"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -80,7 +80,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="2"
-            android:text="Risk Level: "
+            android:text="@string/risk_level"
             android:textSize="8pt" />
 
         <TextView

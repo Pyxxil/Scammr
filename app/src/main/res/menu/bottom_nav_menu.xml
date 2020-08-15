@@ -6,17 +6,17 @@
     <item
         android:id="@+id/action_home"
         android:enabled="true"
-        android:title="Home"
+        android:title="@string/home"
         app:showAsAction="ifRoom" />
     <item
         android:id="@+id/action_report"
         android:enabled="true"
-        android:title="Report"
+        android:title="@string/report"
         app:showAsAction="ifRoom" />
     <item
         android:id="@+id/action_settings"
         android:enabled="true"
-        android:title="Settings"
+        android:title="@string/settings"
         app:showAsAction="ifRoom" />
 
 </menu>
